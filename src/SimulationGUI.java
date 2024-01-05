@@ -8,7 +8,7 @@ public class SimulationGUI extends JFrame {
     private List<Prey> preys = new ArrayList<>();
 
     public SimulationGUI() {
-        setTitle("Prey Simulation");
+        setTitle("Predator/Prey Simulation");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -43,10 +43,16 @@ public class SimulationGUI extends JFrame {
     }
 
     private class SimulationPanel extends JPanel {
+        public SimulationPanel(){
+            setBackground(Color.GRAY);
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
+
             super.paintComponent(g);
             for (Prey prey : preys) {
+                g.setColor(Color.GREEN);
                 g.fillOval(prey.getX(), prey.getY(), 10, 10); // Represent each Prey with a circle
             }
         }
