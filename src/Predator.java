@@ -1,9 +1,9 @@
-public class Prey extends Animal {
+public class Predator extends Animal {
     // Attribute to track the age of the prey.
     private int age = 0;
 
     // Constructor to initialize the prey's position and randomly assign an initial age.
-    public Prey(int x, int y){
+    public Predator(int x, int y){
         super(x, y);
         age = (int) (Math.random() * Animal.MAXAGE);
     }
