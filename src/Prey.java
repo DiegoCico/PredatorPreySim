@@ -21,7 +21,7 @@ public class Prey extends Animal {
     // Method for the prey to breed under certain conditions.
     public Prey breed(){
         int chancesOfBreed = (int) (Math.random() * 100);
-        if (age >= Animal.DUPLICATE && chancesOfBreed >= 50){
+        if (age >= Animal.DUPLICATE && chancesOfBreed >= 60){
             return new Prey((int) (Math.random() * getX()), (int) (Math.random() * getY()));
         }
         return null;
