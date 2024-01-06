@@ -45,6 +45,7 @@ public class SimulationGUI extends JFrame {
             }
             for (Predator predator : predators) {
                 predator.move(maxX, maxY, preys);
+                predatorEat(predator);
             }
             panel.repaint();
         }).start();
@@ -55,15 +56,32 @@ public class SimulationGUI extends JFrame {
         }).start();
     }
 
+    private void predatorEat(Predator predator){
+            Prey isEaten = predator.eat(preys);
+            if (isEaten != null) {
+                preys.remove(isEaten);
+            }
+
+    }
+
     private void updateAnimals() {
         Iterator<Prey> preyIterator = preys.iterator();
+        List<Prey> newPreys = new ArrayList<>();
+
         while (preyIterator.hasNext()) {
             Prey prey = preyIterator.next();
             prey.increaseAge();
             if (prey.getIsDead()) {
                 preyIterator.remove();
+            } else {
+                Prey newPrey = prey.breed();
+                if (newPrey != null) {
+                    newPreys.add(newPrey);
+                }
             }
         }
+
+        preys.addAll(newPreys);
 
         Iterator<Predator> predatorIterator = predators.iterator();
         while (predatorIterator.hasNext()) {

@@ -3,24 +3,25 @@ import java.util.List;
 public class Predator extends Animal {
     // Attribute to track the age of the prey.
     private int age = 0;
+    private Prey lastTargetedPrey = null;
 
     // Constructor to initialize the prey's position and randomly assign an initial age.
-    public Predator(int x, int y){
+    public Predator(int x, int y) {
         super(x, y);
         age = (int) (Math.random() * Animal.MAXAGE);
     }
 
     // Method to increment the age of the prey and check for its life status.
-    public void increaseAge(){
+    public void increaseAge() {
         age++;
-        if(age >= Animal.MAXAGE){
+        if (age >= Animal.PREDATORMAXAGE) {
             setIsDead(true);
         }
     }
 
     // Method for the prey to breed under certain conditions.
-    public Prey breed(){
-        if (age == Animal.DUPLICATE && (int) (Math.random() * 100) >= 60){
+    public Prey breed() {
+        if (age == Animal.DUPLICATE && (int) (Math.random() * 100) >= 60) {
             System.out.println("BREED");
             // Fixed: Proper casting of Math.random() to ensure correct position calculation.
             return new Prey((int) (Math.random() * getX()), (int) (Math.random() * getY()));
@@ -71,4 +72,21 @@ public class Predator extends Animal {
         setX(x);
         setY(y);
     }
+
+    public Prey eat(List<Prey> preys) {
+        for (Prey prey : preys) {
+            // Skip if this prey is the last targeted prey
+            if (prey == lastTargetedPrey) {
+                continue;
+            }
+
+            if (Math.abs(prey.getX() - this.getX()) <= 10 &&
+                    Math.abs(prey.getY() - this.getY()) <= 10) {
+                lastTargetedPrey = prey;
+                return prey;
+            }
+        }
+        return null;
+    }
 }
+

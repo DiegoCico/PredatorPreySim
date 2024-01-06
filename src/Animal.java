@@ -1,7 +1,8 @@
 public class Animal {
     // Constants defining the maximum age and breeding age for an animal.
     public static final int MAXAGE = 12;
-    public static final int DUPLICATE = 5;
+    public static final int PREDATORMAXAGE = 24;
+    public static final int DUPLICATE =3;
 
     // Attributes to track the animal's breeding capability and life status.
     private boolean canBreed = false;
