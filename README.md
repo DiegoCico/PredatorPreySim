@@ -1,0 +1,1 @@
+A Java-based predator-prey simulation program models the dynamic interactions between predator and prey populations in an ecosystem, offering a visually interactive environment for understanding ecological balances. It also features an analytical chart, which tracks and displays the population trends over time, aiding in the interpretation and analysis of the simulation results.
