@@ -1,78 +1,99 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SimulationGUI extends JFrame {
     private SimulationPanel panel;
     private List<Prey> preys = new ArrayList<>();
     private List<Predator> predators = new ArrayList<>();
+    private GraphFrame graphFrame;
+
+    private int maxX = 800;
+    private int maxY = 600;
 
     public SimulationGUI() {
         setTitle("Predator/Prey Simulation");
-        setSize(800, 600);
+        setSize(maxX, maxY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         panel = new SimulationPanel();
         getContentPane().add(panel);
 
-        // Create some Prey and Predators instances
+        initAnimals();
+
+        graphFrame = new GraphFrame();
+        graphFrame.setVisible(true);
+
+        setupTimers();
+    }
+
+    private void initAnimals() {
         for (int i = 0; i < 10; i++) {
-            preys.add(new Prey((int) (Math.random() * 800), (int) (Math.random() * 600)));
+            preys.add(new Prey((int) (Math.random() * maxX), (int) (Math.random() * maxY)));
         }
         for (int i = 0; i < 5; i++) {
-            predators.add(new Predator((int) (Math.random() * 800), (int) (Math.random() * 600)));
+            predators.add(new Predator((int) (Math.random() * maxX), (int) (Math.random() * maxY)));
         }
+    }
 
-        // Timer to update and repaint the simulation for movement
+    private void setupTimers() {
         new Timer(50, e -> {
             for (Prey prey : preys) {
-                prey.move(800, 600); // Adjusted to the size of the GUI window
+                prey.move(maxX, maxY, predators);
             }
             for (Predator predator : predators) {
-                predator.move(800, 600); // Adjusted to the size of the GUI window
+                predator.move(maxX, maxY, preys);
             }
             panel.repaint();
         }).start();
 
-        // Timer to update age and handle breeding
-        new Timer(100, e -> {
-            List<Prey> newPreys = new ArrayList<>();
-            for (Prey prey : preys) {
-                prey.increaseAge();
-                Prey offspring = prey.breed();
-                if(offspring != null)
-                    newPreys.add(offspring);
-            }
-            preys.addAll(newPreys);
+        new Timer(3000, e -> {
+            updateAnimals();
             panel.repaint();
         }).start();
     }
 
+    private void updateAnimals() {
+        Iterator<Prey> preyIterator = preys.iterator();
+        while (preyIterator.hasNext()) {
+            Prey prey = preyIterator.next();
+            prey.increaseAge();
+            if (prey.getIsDead()) {
+                preyIterator.remove();
+            }
+        }
+
+        Iterator<Predator> predatorIterator = predators.iterator();
+        while (predatorIterator.hasNext()) {
+            Predator predator = predatorIterator.next();
+            predator.increaseAge();
+            if (predator.getIsDead()) {
+                predatorIterator.remove();
+            }
+        }
+
+        graphFrame.updateGraph(preys.size(), predators.size());
+    }
+
     private class SimulationPanel extends JPanel {
-        public SimulationPanel(){
+        public SimulationPanel() {
             setBackground(Color.GRAY);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-
             super.paintComponent(g);
             for (Prey prey : preys) {
                 g.setColor(Color.GREEN);
-                g.fillOval(prey.getX(), prey.getY(), 10, 10); // Represent each Prey with a circle
+                g.fillOval(prey.getX(), prey.getY(), 10, 10);
             }
             for (Predator predator : predators) {
                 g.setColor(Color.RED);
-                g.fillOval(predator.getX(), predator.getY(), 10, 10); // Represent each Predator with a circle
+                g.fillOval(predator.getX(), predator.getY(), 10, 10);
             }
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SimulationGUI gui = new SimulationGUI();
-            gui.setVisible(true);
-        });
-    }
 }
