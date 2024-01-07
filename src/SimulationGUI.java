@@ -84,13 +84,22 @@ public class SimulationGUI extends JFrame {
         preys.addAll(newPreys);
 
         Iterator<Predator> predatorIterator = predators.iterator();
+        List<Predator> newPredators = new ArrayList<>();
+
         while (predatorIterator.hasNext()) {
             Predator predator = predatorIterator.next();
             predator.increaseAge();
             if (predator.getIsDead()) {
                 predatorIterator.remove();
+            } else {
+                Predator newPredator = predator.breed();
+                if (newPredator != null) {
+                    newPredators.add(newPredator);
+                }
             }
         }
+
+        predators.addAll(newPredators);
 
         graphFrame.updateGraph(preys.size(), predators.size());
     }

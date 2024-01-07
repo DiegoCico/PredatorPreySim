@@ -4,6 +4,9 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Frame for displaying a dynamic simulation graph.
+ */
 public class GraphFrame extends JFrame {
     private GraphPanel graphPanel;
 
@@ -15,10 +18,19 @@ public class GraphFrame extends JFrame {
         add(graphPanel);
     }
 
+    /**
+     * Updates the graph with new prey and predator counts.
+     *
+     * @param preyCount     the current count of prey
+     * @param predatorCount the current count of predators
+     */
     public void updateGraph(int preyCount, int predatorCount) {
         graphPanel.updateCounts(preyCount, predatorCount);
     }
 
+    /**
+     * Inner class for the graph panel.
+     */
     private class GraphPanel extends JPanel {
         private List<Integer> preyCounts = new ArrayList<>();
         private List<Integer> predatorCounts = new ArrayList<>();
@@ -28,6 +40,11 @@ public class GraphFrame extends JFrame {
             setBackground(Color.WHITE);
         }
 
+        /**
+         * Draws gridlines on the graph.
+         *
+         * @param g2d the Graphics2D object
+         */
         private void drawGridlines(Graphics2D g2d) {
             g2d.setColor(Color.LIGHT_GRAY);
             for (int i = 0; i <= 10; i++) {
@@ -38,6 +55,14 @@ public class GraphFrame extends JFrame {
             }
         }
 
+        /**
+         * Draws the graph lines for prey and predator counts.
+         *
+         * @param g2d    the Graphics2D object
+         * @param counts the counts to plot
+         * @param color  the color of the graph line
+         * @param lineWidth the width of the graph line
+         */
         private void drawGraph(Graphics2D g2d, List<Integer> counts, Color color, float lineWidth) {
             if (counts.isEmpty()) return;
 
@@ -49,9 +74,7 @@ public class GraphFrame extends JFrame {
                     predatorCounts.stream().max(Integer::compare).orElse(1)
             );
 
-            for (int i = 0; i < counts.size(); i++) {
-                if (i == 0) continue; // Skip the first point
-
+            for (int i = 1; i < counts.size(); i++) {
                 int x1 = (i - 1) * getWidth() / (counts.size() - 1);
                 int y1 = getHeight() - (getHeight() * counts.get(i - 1) / maxCount);
 
@@ -62,17 +85,31 @@ public class GraphFrame extends JFrame {
             }
         }
 
+        /**
+         * Draws axis labels for the graph.
+         *
+         * @param g2d the Graphics2D object
+         */
         private void drawAxisLabels(Graphics2D g2d) {
             g2d.setColor(Color.BLACK);
-            g2d.drawString("", getWidth() - 50, getHeight() - 10);
-            g2d.drawString("", 10, 10);
+            // Add logic to draw axis labels if required
         }
 
+        /**
+         * Retrieves the last count of prey.
+         *
+         * @return the last prey count
+         */
         private int getLastPreyCount() {
             if (preyCounts.isEmpty()) return 0;
             return preyCounts.get(preyCounts.size() - 1);
         }
 
+        /**
+         * Retrieves the last count of predators.
+         *
+         * @return the last predator count
+         */
         private int getLastPredatorCount() {
             if (predatorCounts.isEmpty()) return 0;
             return predatorCounts.get(predatorCounts.size() - 1);
@@ -92,6 +129,11 @@ public class GraphFrame extends JFrame {
             drawCurrentCounts(g2d);
         }
 
+        /**
+         * Draws the current prey and predator counts.
+         *
+         * @param g2d the Graphics2D object
+         */
         private void drawCurrentCounts(Graphics2D g2d) {
             g2d.setColor(Color.BLACK);
             String preyCountStr = "Current Prey Count: " + getLastPreyCount();
@@ -100,9 +142,12 @@ public class GraphFrame extends JFrame {
             g2d.drawString(predatorCountStr, getWidth() - 220, getHeight() - 20);
         }
 
-
+        /**
+         * Draws a legend for the graph.
+         *
+         * @param g2d the Graphics2D object
+         */
         private void drawLegend(Graphics2D g2d) {
-            // Example legend
             g2d.setColor(new Color(60, 179, 113));
             g2d.fillRect(10, 10, 10, 10);
             g2d.setColor(new Color(220, 20, 60));
@@ -112,6 +157,12 @@ public class GraphFrame extends JFrame {
             g2d.drawString("Predator", 25, 40);
         }
 
+        /**
+         * Updates the prey and predator counts and repaints the graph.
+         *
+         * @param preyCount     the new prey count
+         * @param predatorCount the new predator count
+         */
         public void updateCounts(int preyCount, int predatorCount) {
             preyCounts.add(preyCount);
             predatorCounts.add(predatorCount);

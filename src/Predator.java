@@ -1,17 +1,30 @@
 import java.util.List;
 
+/**
+ * Represents a predator in a wildlife simulation.
+ * Extends the Animal class, with additional attributes and behaviors specific to predators.
+ */
 public class Predator extends Animal {
-    // Attribute to track the age of the prey.
-    private int age = 0;
-    private Prey lastTargetedPrey = null;
+    private static final int EATING_RANGE = 10;
 
-    // Constructor to initialize the prey's position and randomly assign an initial age.
+    private int age;
+    private Prey lastTargetedPrey;
+
+    /**
+     * Constructs a Predator with a random initial age.
+     *
+     * @param x The initial x-coordinate.
+     * @param y The initial y-coordinate.
+     */
     public Predator(int x, int y) {
         super(x, y);
-        age = (int) (Math.random() * Animal.MAXAGE);
+        this.age = (int) (Math.random() * Animal.PREDATORMAXAGE);
+        this.lastTargetedPrey = null;
     }
 
-    // Method to increment the age of the prey and check for its life status.
+    /**
+     * Increments the age of the predator and checks if it has reached its maximum age.
+     */
     public void increaseAge() {
         age++;
         if (age >= Animal.PREDATORMAXAGE) {
@@ -19,41 +32,56 @@ public class Predator extends Animal {
         }
     }
 
-    // Method for the prey to breed under certain conditions.
-    public Prey breed() {
-        if (age == Animal.DUPLICATE && (int) (Math.random() * 100) >= 60) {
-            System.out.println("BREED");
-            // Fixed: Proper casting of Math.random() to ensure correct position calculation.
-            return new Prey((int) (Math.random() * getX()), (int) (Math.random() * getY()));
+    /**
+     * Determines if the predator can breed based on its age and a random chance.
+     *
+     * @return A new Predator object if breeding occurs, otherwise null.
+     */
+    public Predator breed() {
+        int chancesOfBreed = (int) (Math.random() * 100);
+        if (age >= Animal.DUPLICATE && chancesOfBreed >= 90) {
+            return new Predator((int) (Math.random() * getX()), (int) (Math.random() * getY()));
         }
         return null;
     }
 
-    // Method to move the predator towards the nearest prey.
+    /**
+     * Moves the predator towards the nearest prey or randomly if no prey is nearby.
+     *
+     * @param maxX The maximum x-bound of the map.
+     * @param maxY The maximum y-bound of the map.
+     * @param preys A list of prey currently in the simulation.
+     */
     public void move(int maxX, int maxY, List<Prey> preys) {
         Prey nearestPrey = findNearestPrey(preys);
         if (nearestPrey != null) {
-            // Move towards the nearest prey
-            int deltaX = Integer.compare(nearestPrey.getX(), getX());
-            int deltaY = Integer.compare(nearestPrey.getY(), getY());
-
-            // Update position within boundaries.
-            int x = Math.max(0, Math.min(getX() + deltaX, maxX - 1));
-            int y = Math.max(0, Math.min(getY() + deltaY, maxY - 1));
-            setX(x);
-            setY(y);
+            chasePrey(nearestPrey, maxX, maxY);
         } else {
-            // If no prey is found, move randomly
             randomMove(maxX, maxY);
         }
     }
 
-    // Helper method to find the nearest prey.
+    /**
+     * Attempts to eat nearby prey.
+     *
+     * @param preys A list of available prey.
+     * @return The eaten prey or null if none are within range.
+     */
+    public Prey eat(List<Prey> preys) {
+        for (Prey prey : preys) {
+            if (prey != lastTargetedPrey && isPreyInRange(prey)) {
+                lastTargetedPrey = prey;
+                return prey;
+            }
+        }
+        return null;
+    }
+
     private Prey findNearestPrey(List<Prey> preys) {
         Prey nearest = null;
         double minDistance = Double.MAX_VALUE;
         for (Prey prey : preys) {
-            double distance = Math.sqrt(Math.pow(prey.getX() - getX(), 2) + Math.pow(prey.getY() - getY(), 2));
+            double distance = Math.hypot(prey.getX() - getX(), prey.getY() - getY());
             if (distance < minDistance) {
                 minDistance = distance;
                 nearest = prey;
@@ -62,31 +90,27 @@ public class Predator extends Animal {
         return nearest;
     }
 
-    // Method for random movement
+    private void chasePrey(Prey prey, int maxX, int maxY) {
+        int deltaX = Integer.compare(prey.getX(), getX());
+        int deltaY = Integer.compare(prey.getY(), getY());
+        updatePosition(deltaX, deltaY, maxX, maxY);
+    }
+
     private void randomMove(int maxX, int maxY) {
         int deltaX = (int) (Math.random() * 3) - 1; // -1, 0, or 1
         int deltaY = (int) (Math.random() * 3) - 1; // -1, 0, or 1
-
-        int x = Math.max(0, Math.min(getX() + deltaX, maxX - 1));
-        int y = Math.max(0, Math.min(getY() + deltaY, maxY - 1));
-        setX(x);
-        setY(y);
+        updatePosition(deltaX, deltaY, maxX, maxY);
     }
 
-    public Prey eat(List<Prey> preys) {
-        for (Prey prey : preys) {
-            // Skip if this prey is the last targeted prey
-            if (prey == lastTargetedPrey) {
-                continue;
-            }
+    private void updatePosition(int deltaX, int deltaY, int maxX, int maxY) {
+        int newX = Math.max(0, Math.min(getX() + deltaX, maxX - 1));
+        int newY = Math.max(0, Math.min(getY() + deltaY, maxY - 1));
+        setX(newX);
+        setY(newY);
+    }
 
-            if (Math.abs(prey.getX() - this.getX()) <= 10 &&
-                    Math.abs(prey.getY() - this.getY()) <= 10) {
-                lastTargetedPrey = prey;
-                return prey;
-            }
-        }
-        return null;
+    private boolean isPreyInRange(Prey prey) {
+        return Math.abs(prey.getX() - getX()) <= EATING_RANGE &&
+                Math.abs(prey.getY() - getY()) <= EATING_RANGE;
     }
 }
-
