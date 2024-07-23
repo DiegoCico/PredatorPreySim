@@ -25,7 +25,7 @@ Installation
 
 Clone the repository:
 
-git clone https://github.com/yourusername/animal-simulation.git
+git clone https://github.com/diegocico/predadorpreysim.git
 cd animal-simulation
 
 Compile the Java files:
