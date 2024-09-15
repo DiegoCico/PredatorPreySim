@@ -68,6 +68,3 @@ Responsible for rendering the graph that shows the population changes of prey an
 
 Manages the graphical user interface (GUI) and visual elements of the simulation, using Java Swing for displaying both the simulation and the graph.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
